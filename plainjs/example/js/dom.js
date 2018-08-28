@@ -1,21 +1,39 @@
+/**
+ * This takes care of the interaction with the dom
+ *  - inserts elements, creates elements, adds their event listeners, etc.
+ *  - this will eventually be abstracted, but does what it needs to now and is small enough.
+ * @param {HTMLElement} entrypoint This is the DOM element that will have things appended to it
+ */
 function DecisionDOM(entrypoint) {
   this.entrypoint = entrypoint;
+  // create instance of the storage class to pass to the Questions class
   this.storage = new Storage();
+  // create instance of questions class and pass the storage instance to it
   this.questions = new Questions(this.storage);
+  // create a couple div elements and set them as a class properties, because they will be used in the class
   this.questionEl = document.createElement('div');
   this.questionListEl = document.createElement('div');
 }
 
+/**
+ * Initializes the DOM with the starting DOM elements
+ */
 DecisionDOM.prototype.init = function() {
+  // set some classes for our elements
   this.questionEl.setAttribute('class', 'question');
   this.questionListEl.setAttribute('class', 'question-list');
+  // add our class elements to the entrypoint in the DOM
   this.entrypoint.appendChild(this.questionListEl);
   this.entrypoint.appendChild(this.questionEl);
   this.showQuestionInput();
   this.updateQuestionList();
 }
 
+/**
+ * Generates and injects the question input and button with event listeners and whatnot
+ */
 DecisionDOM.prototype.showQuestionInput = function() {
+  // _this is so any anonymous functions in the scope of this function can have access to the DecisionDOM class
   var _this = this;
   var input = document.createElement('input');
   var saveBtn = document.createElement('button');
@@ -27,14 +45,23 @@ DecisionDOM.prototype.showQuestionInput = function() {
     _this.updateQuestionList();
     input.value = '';
   });
+  // append the input and save button to the questionEl element created in the constructor
   this.questionEl.appendChild(input);
   this.questionEl.appendChild(saveBtn);
 }
 
+/**
+ * Adds all of the questions created to a list
+ */
 DecisionDOM.prototype.updateQuestionList = function() {
+  // clear out all of the html that was there so there aren't duplicates
+  // this is not efficient, but it can be changed later. 
   this.questionListEl.innerHTML = '';
+  // scope access to the class
   var _this = this;
-  var items = this.questions.questions.forEach(function(question) {
+  // loop through all of the questions saved and add them to the DOM
+  this.questions.questions.forEach(function(question) {
+    // create list item and append it to the questionListEl
     var item = document.createElement('div');
     item.setAttribute('class', 'question-list-item');
     var itemText = document.createTextNode(question.question);
