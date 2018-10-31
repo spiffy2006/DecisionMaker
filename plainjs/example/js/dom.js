@@ -23,8 +23,8 @@ DecisionDOM.prototype.init = function() {
   this.questionEl.setAttribute('class', 'question');
   this.questionListEl.setAttribute('class', 'question-list');
   // add our class elements to the entrypoint in the DOM
-  this.entrypoint.appendChild(this.questionListEl);
   this.entrypoint.appendChild(this.questionEl);
+  this.entrypoint.appendChild(this.questionListEl);
   this.showQuestionInput();
   this.updateQuestionList();
 }
@@ -37,14 +37,23 @@ DecisionDOM.prototype.showQuestionInput = function() {
   var _this = this;
   var input = document.createElement('input');
   var saveBtn = document.createElement('button');
+  var saveQuestion = function() {
+    _this.questions.add(input.value);
+    _this.updateQuestionList();
+    input.value = '';
+  };
   input.setAttribute('type', 'text');
   saveBtn.setAttribute('type', 'button');
   saveBtn.appendChild(document.createTextNode('Add'));
   saveBtn.addEventListener('click', function(e) {
-    _this.questions.add(input.value);
-    _this.updateQuestionList();
-    input.value = '';
+    saveQuestion();
   });
+  input.addEventListener('keyup', function(e) {
+    if (e.key === 'Enter'){
+      saveQuestion();
+    }
+  });
+
   // append the input and save button to the questionEl element created in the constructor
   this.questionEl.appendChild(input);
   this.questionEl.appendChild(saveBtn);
@@ -55,7 +64,7 @@ DecisionDOM.prototype.showQuestionInput = function() {
  */
 DecisionDOM.prototype.updateQuestionList = function() {
   // clear out all of the html that was there so there aren't duplicates
-  // this is not efficient, but it can be changed later. 
+  // this is not efficient, but it can be changed later.
   this.questionListEl.innerHTML = '';
   // scope access to the class
   var _this = this;
@@ -65,7 +74,19 @@ DecisionDOM.prototype.updateQuestionList = function() {
     var item = document.createElement('div');
     item.setAttribute('class', 'question-list-item');
     var itemText = document.createTextNode(question.question);
+    var itemDeleteButton = document.createElement('button');
+    itemDeleteButton.setAttribute('class', 'question-list-item');
+    itemDeleteButton.appendChild(document.createTextNode('X'));
+    item.appendChild(itemDeleteButton);
     item.appendChild(itemText);
     _this.questionListEl.appendChild(item);
+
+    itemDeleteButton.addEventListener('click', function(e) {
+      _this.questions.remove(question);
+      // alert(question.question);
+      _this.updateQuestionList();
+    });
+
+
   });
 }

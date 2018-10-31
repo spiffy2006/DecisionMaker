@@ -28,8 +28,8 @@ Questions.prototype.add = function(question, options) {
  */
 Questions.prototype.remove = function(question) {
   // filter out the question that needs to be removed
-  var removed = this.questions.filter(function(question) {
-    if (question.question === question) {
+  var removed = this.questions.filter(function(q) {
+    if (q.question === question.question) {
       return false;
     } else {
       return true;
@@ -37,4 +37,5 @@ Questions.prototype.remove = function(question) {
   });
   // update the storage
   this.storage.update(this.storageName, removed);
+  this.questions = removed;
 }
